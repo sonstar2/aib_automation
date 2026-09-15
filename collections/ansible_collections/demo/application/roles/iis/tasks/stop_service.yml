@@ -1,0 +1,5 @@
+---
+- name: Stop IIS service
+  ansible.windows.win_service:
+    name: W3Svc
+    state: stopped

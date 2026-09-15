@@ -1,0 +1,46 @@
+---
+# Install and tune PostgreSQL to satisfy roles/database/tasks/test.yml.
+- name: Gather facts for memory-based tuning
+  ansible.builtin.setup:
+    gather_subset:
+      - "!all"
+      - "!min"
+      - hardware
+  when: ansible_memory_mb is not defined
+
+- name: Install PostgreSQL server packages
+  ansible.builtin.package:
+    name:
+      - postgresql-server
+      - postgresql
+    state: present
+
+- name: Check whether PostgreSQL data directory is initialized
+  ansible.builtin.stat:
+    path: /var/lib/pgsql/data/PG_VERSION
+  register: __pgsql_data
+
+- name: Initialize PostgreSQL database cluster
+  ansible.builtin.command: postgresql-setup --initdb
+  when: not __pgsql_data.stat.exists
+  changed_when: true
+
+- name: Configure shared_buffers (1/4 of RAM)
+  ansible.builtin.lineinfile:
+    path: /var/lib/pgsql/data/postgresql.conf
+    regexp: '^#?shared_buffers\s*='
+    line: "shared_buffers = {{ (ansible_memory_mb.real.total / 4) | int }}MB"
+    backup: true
+
+- name: Configure effective_cache_size (1/2 of RAM)
+  ansible.builtin.lineinfile:
+    path: /var/lib/pgsql/data/postgresql.conf
+    regexp: '^#?effective_cache_size\s*='
+    line: "effective_cache_size = {{ (ansible_memory_mb.real.total / 2) | int }}MB"
+    backup: true
+
+- name: Start and enable PostgreSQL
+  ansible.builtin.service:
+    name: postgresql
+    state: started
+    enabled: true

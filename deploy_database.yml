@@ -1,0 +1,12 @@
+---
+- name: Post Application Tasks
+  hosts: "{{ _hosts | default(omit) }}"
+  gather_facts: true
+  become: true
+
+  tasks:
+    - name: Database Role | Deploy application
+      ansible.builtin.include_role:
+        name: databse
+
+

@@ -1,0 +1,12 @@
+---
+- name: Verify Database Tasks
+  hosts: "{{ _hosts | default(omit) }}"
+  gather_facts: true
+  become: true
+
+  tasks:
+ 
+    - name: Database role | Test Service
+      ansible.builtin.include_role:
+        name: database
+        tasks_from: test.yml

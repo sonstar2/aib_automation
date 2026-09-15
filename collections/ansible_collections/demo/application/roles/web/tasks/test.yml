@@ -1,0 +1,27 @@
+---
+
+- name: Test - gather service facts
+  ansible.builtin.service_facts:
+
+- name: Test - socket is active
+  ansible.builtin.assert:
+    that:
+      - "'httpd.service' in ansible_facts.services"
+      - ansible_facts.services['httpd.service'].state == 'running'
+
+- name: Test - socket is enabled
+  ansible.builtin.assert:
+    that:
+      - "'httpd.service' in ansible_facts.services"
+      - ansible_facts.services['httpd.service'].status == 'enabled'
+
+- name: Test - webserver works
+  ansible.builtin.uri:
+    url: http://localhost
+
+- name: Test - configuration file
+  stat:
+    path: /var/www/html/index.html
+  register: result
+  failed_when: not result.stat.exists
+

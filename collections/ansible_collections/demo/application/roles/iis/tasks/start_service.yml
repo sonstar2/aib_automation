@@ -1,0 +1,6 @@
+---
+- name: Start IIS service
+  ansible.windows.win_service:
+    name: W3Svc
+    state: started
+    start_mode: auto

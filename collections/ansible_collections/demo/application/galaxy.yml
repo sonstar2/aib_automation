@@ -1,0 +1,11 @@
+---
+namespace: demo
+name: application
+version: 1.0.0
+readme: README.md
+authors:
+  - AAP Security Response Workshop
+description: Workshop application roles (database, IIS, web, cockpit).
+license_file: ''
+tags: [application, workshop, iis, postgresql]
+dependencies: {}

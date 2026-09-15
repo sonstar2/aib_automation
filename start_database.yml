@@ -1,0 +1,13 @@
+---
+- name: Start Databse Service
+  hosts: "{{ _hosts | default(omit) }}"
+  gather_facts: true
+  become: true
+
+  tasks:
+    - name: Database role | Start Service
+      ansible.builtin.include_role:
+        name: database
+        tasks_from: start_service.yml
+      when: app_role_name is defined
+

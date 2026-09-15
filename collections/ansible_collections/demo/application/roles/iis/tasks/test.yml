@@ -1,0 +1,21 @@
+---
+- name: Test - W3SVC service is running
+  ansible.windows.win_service_info:
+    name: W3Svc
+  register: __iis_w3svc
+  # win_service_info reports state as "started" (not "running")
+  failed_when: >-
+    __iis_w3svc.services | default([]) | length == 0
+    or (__iis_w3svc.services[0].state | lower) not in ['started', 'running']
+
+- name: Test - website responds on localhost
+  ansible.windows.win_uri:
+    url: http://localhost/
+    return_content: true
+    status_code: 200
+
+- name: Test - index.html exists
+  ansible.windows.win_stat:
+    path: C:\Inetpub\wwwroot\index.html
+  register: __iis_index
+  failed_when: not __iis_index.stat.exists
