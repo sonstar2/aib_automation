@@ -8,5 +8,5 @@
  
     - name: Database role | Test Service
       ansible.builtin.include_role:
-        name: database
+        name: demo.application.database
         tasks_from: test.yml
